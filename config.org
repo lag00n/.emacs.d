@@ -84,8 +84,7 @@ The auto-package-update package helps us keep our Emacs packages always up to da
 (electric-pair-mode t)
 #+end_src
 
-#+RESULTS:
-: t
+
 
 * Clipboard fix
 
@@ -112,7 +111,7 @@ The auto-package-update package helps us keep our Emacs packages always up to da
 	  aw-leading-char-style 'char
 		aw-scope 'frame)
   :bind (("M-o" . ace-window)
-	   ("M-O" . ace-swap-window)))
+				 ("M-O" . ace-swap-window)))
 #+end_src
 
 * Creating a new window switches the focus to it
@@ -310,7 +309,8 @@ CLOSED: [2021-05-16 dom 00:00]
 			       (org-bullets-mode 1)
 			       (require 'org-tempo) ;; activating some cool shortcuts
 			       (setq tempo-interactive t)
-			       (org-indent-mode)))
+						 (setq org-startup-folded t)
+						 (org-indent-mode)))
 #+end_src
 
 ** Ox-jekyll-md ( for blog posts )
