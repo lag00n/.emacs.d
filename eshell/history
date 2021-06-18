@@ -1,0 +1,26 @@
+exit
+ls
+cat ../_cool_posts/lmfao.md 
+ls
+cat about.org 
+cat ../_cool_posts/test.md 
+cd /tmp/
+ls
+tar zxvf advancemame-3.9.tar.gz 
+ls
+ls
+cd advancemame-3.9/
+ls
+./configure --help
+./configure --help | grep wayland
+./configure --prefix=/home/murilo/.local
+exit
+xmodmap .xmodmap
+xmodmap .xmodmap
+ls
+ls
+ls
+exit
+xmodmap ~/.xmodmap
+xmodmap ~/.xmodmap
+exit
