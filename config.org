@@ -7,7 +7,6 @@ That's my emacs config, written in org. This file generates [[file:init.el][init
 Whitout futher ado, let's get started!
 Still is a wip, so, stuff can be updated anytime.
 
-
 * Startup Performance
 
 #+begin_src elisp
@@ -22,9 +21,11 @@ Still is a wip, so, stuff can be updated anytime.
 
 * Package system setup
 Emacs has a built in package manager but it doesn't make it easy to automatically install packages on a new system the first time you pull doun your configuration.
-Because of that, I'll be using [[https://github.com/jwiegley/use-package][use-package]] to ease that process.
+Because of that, I'll be using [[https://github.com/jwiegley/use-package][use-package]] to ease that process
 
-#+begin_src elisp
+*NOTE:* Currently disabled because I'm trying out [[https://github.com/raxod502/straight.el][straight.el]] as an alternative.
+
+#+begin_src elisp :tangle no
 ;; Initialize package sources
 (require 'package)
 
@@ -37,13 +38,48 @@ Because of that, I'll be using [[https://github.com/jwiegley/use-package][use-pa
   (package-refresh-contents))
 
 ;; install use-package if not installed yet 
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+;;(unless (package-installed-p 'use-package)
+;;  (package-install 'use-package))
 
 ;; Initialize use-package
-(require 'use-package)
-(setq use-package-always-ensure t)
+;;(require 'use-package)
+;;(setq use-package-always-ensure t)
 #+end_src
+
+* Straight.el
+Straight.el is a simple yet powerfull alternative to package.el, which I'm currently trying out.
+
+#+begin_src elisp
+	(unless (featurep 'straight)
+		;; Bootstrap straight.el
+		(defvar bootstrap-version)
+		(let ((bootstrap-file
+					 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+					(bootstrap-version 5))
+			(unless (file-exists-p bootstrap-file)
+				(with-current-buffer
+						(url-retrieve-synchronously
+						 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+						 'silent 'inhibit-cookies)
+					(goto-char (point-max))
+					(eval-print-last-sexp)))
+			(load bootstrap-file nil 'nomessage)))
+
+	;; Use straight.el for use-package expressions
+	(straight-use-package 'use-package)
+
+	;; Disabling package.el completely
+  (setq package-enable-at-startup nil)
+#+end_src
+
+** Configuring use-package + straight.el
+
+#+begin_src elisp
+
+		 (use-package straight
+									:custom (straight-use-package-by-default t))
+
+#+end_src						 
 
 * Automatic Package Updates
 The auto-package-update package helps us keep our Emacs packages always up to date. After a certain number of days, it will prompt you to remind you to update your packages.
@@ -52,6 +88,7 @@ The auto-package-update package helps us keep our Emacs packages always up to da
 
  #+begin_src elisp
  (use-package auto-package-update
+   :straight t 
    :custom
    (auto-package-update-interval 7)
    (auto-package-update-prompt-before-update t)
@@ -84,8 +121,22 @@ The auto-package-update package helps us keep our Emacs packages always up to da
 (electric-pair-mode t)
 #+end_src
 
+* Which-key
+Which key helps a lot to remember some keybindings, so I'm going to add it here.
+#+begin_src elisp
+(use-package which-key
+	:init (which-key-mode))
+#+end_src
+* Some cool snippets
+Ima go try testing YASnippet for having some cool snippets in emacs.
+Might disable it later if I doesn't like it.
 
-
+#+begin_src elisp
+(use-package yasnippet
+	:config
+	(setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+	(yas-global-mode 1))
+#+end_src
 * Clipboard fix
 
 #+begin_src elisp
@@ -113,6 +164,7 @@ The auto-package-update package helps us keep our Emacs packages always up to da
   :bind (("M-o" . ace-window)
 				 ("M-O" . ace-swap-window)))
 #+end_src
+
 
 * Creating a new window switches the focus to it
 
@@ -194,6 +246,7 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 
 #+begin_src elisp
 (use-package dashboard
+	:straight t 
 	:after page-break-lines
 	:config
 	(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
@@ -229,13 +282,13 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 
 #+begin_src elisp
 (use-package doom-themes
+	:straight t 
   :config
   (setq doom-themes-enable-bold t
 	    doom-themes-enable-italic t)
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
-  :init
-  (load-theme 'doom-gruvbox-light t)
+  (load-theme 'doom-wilmersdorf t)
 #+end_src
 
 ** Prettify symbols mode
@@ -254,13 +307,40 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 (global-prettify-symbols-mode t)
 #+end_src
 
-** Simple-modeline 
-
-Simple modeline is a simple configuration for emacs modeline, focused on being lightweight, customizable, and simple.
+** Rainbow Delimiters
 
 #+begin_src elisp
-(use-package simple-modeline
-	:hook (after-init . simple-modeline-mode)) 
+(use-package rainbow-delimiters
+	:init
+	(add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+end_src
+
+** Rainbow mode
+#+begin_src elisp
+(use-package rainbow-mode :defer t)
+#+end_src
+
+** Bespoke-modeline 
+
+Bespoke modeline is a simple, yet beautiful modeline for emacs, based on nano-emacs modeline. 
+
+#+begin_src elisp
+(use-package bespoke-modeline
+	:straight (:type git :host github :repo "mclear-tools/bespoke-modeline")
+	:init
+	;; Set header line (modeline on top)
+	(setq bespoke-modeline-position 'top)
+	;; Modeline height
+	(setq bespoke-modeline-size 3)
+	;; Use visual bell
+	(setq bespoke-modeline-visual-bell t)
+	:config
+	;; Use symbola to proper unicode
+	(when (member "Symbola" (font-family-list))
+		(set-fontset-font
+		 t 'symbol "Symbola" nil))
+
+  (bespoke-modeline-mode))
 #+end_src
 
 ** DONE Configure Ivy + Counsel
@@ -302,6 +382,12 @@ CLOSED: [2021-05-16 dom 00:00]
 
 * Org mode configuration
 
+** First, installing org bullets
+
+#+begin_src elisp
+(use-package org-bullets)
+#+end_src
+
 ** Org hooks
 
 #+begin_src elisp
@@ -310,6 +396,7 @@ CLOSED: [2021-05-16 dom 00:00]
 			       (require 'org-tempo) ;; activating some cool shortcuts
 			       (setq tempo-interactive t)
 						 (setq org-startup-folded t)
+						 (org-toggle-inline-images)
 						 (org-indent-mode)))
 #+end_src
 
@@ -348,6 +435,25 @@ CLOSED: [2021-05-16 dom 00:00]
 	     )))
 #+end_src
 
+** Org mode screenshot
+
+A hack that allow to paste images from clipboard into org files.
+
+#+begin_src elisp
+(defun my-org-screenshot ()
+	"Take a screenshot into a time stamped unique-named
+file in the same directory as the org-buffer and insert a link to this file."
+	(interactive)
+	(setq filename
+				(concat
+				 (make-temp-name
+					(concat (buffer-file-name)
+									"_"
+									(format-time-string "%Y%m%d_%H%M%S_")) ) ".png"))
+	(call-process "import" nil nil nil filename)
+	(insert (concat "[[" filename "]]"))
+	(org-display-inline-images))
+#+end_src
 * Mail setup with mu4e
 
 Mail setup using mu4e.

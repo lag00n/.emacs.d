@@ -6,26 +6,32 @@
 ;; Defer loading most packages for quickier startup times
 (setq use-package-always-defer t)
 
-;; Initialize package sources
-(require 'package)
+(unless (featurep 'straight)
+	;; Bootstrap straight.el
+	(defvar bootstrap-version)
+	(let ((bootstrap-file
+				 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+				(bootstrap-version 5))
+		(unless (file-exists-p bootstrap-file)
+			(with-current-buffer
+					(url-retrieve-synchronously
+					 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+					 'silent 'inhibit-cookies)
+				(goto-char (point-max))
+				(eval-print-last-sexp)))
+		(load bootstrap-file nil 'nomessage)))
 
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			   ("org" . "https://orgmode.org/elpa/")
-			   ("elpa" . "https://elpa.gnu.org/packages/")))
+;; Use straight.el for use-package expressions
+(straight-use-package 'use-package)
 
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+;; Disabling package.el completely
+(setq package-enable-at-startup nil)
 
-;; install use-package if not installed yet 
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-;; Initialize use-package
-(require 'use-package)
-(setq use-package-always-ensure t)
+(use-package straight
+						 :custom (straight-use-package-by-default t))
 
 (use-package auto-package-update
+  :straight t 
   :custom
   (auto-package-update-interval 7)
   (auto-package-update-prompt-before-update t)
@@ -49,6 +55,14 @@
 													 ))
 (electric-pair-mode t)
 
+(use-package which-key
+	:init (which-key-mode))
+
+(use-package yasnippet
+	:config
+	(setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+	(yas-global-mode 1))
+
 (setq x-select-enable-clipboard t)
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
@@ -63,7 +77,7 @@
 	  aw-leading-char-style 'char
 		aw-scope 'frame)
   :bind (("M-o" . ace-window)
-	   ("M-O" . ace-swap-window)))
+				 ("M-O" . ace-swap-window)))
 
 (defun split-and-follow-horizontally ()
  (interactive)
@@ -115,6 +129,7 @@
  (show-paren-mode 1)
 
 (use-package dashboard
+	:straight t 
 	:after page-break-lines
 	:config
 	(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
@@ -141,13 +156,13 @@
   (efs/set-font-faces))
 
 (use-package doom-themes
+	:straight t 
   :config
   (setq doom-themes-enable-bold t
 	    doom-themes-enable-italic t)
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
-  :init
-  (load-theme 'doom-gruvbox-light t)
+  (load-theme 'doom-wilmersdorf t)
 
 (defun my/org-mode/load-prettify-symbols ()
 	(interactive)
@@ -161,8 +176,28 @@
 
 (global-prettify-symbols-mode t)
 
-(use-package simple-modeline
-	:hook (after-init . simple-modeline-mode))
+(use-package rainbow-delimiters
+	:init
+	(add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package rainbow-mode :defer t)
+
+(use-package bespoke-modeline
+	:straight (:type git :host github :repo "mclear-tools/bespoke-modeline")
+	:init
+	;; Set header line (modeline on top)
+	(setq bespoke-modeline-position 'top)
+	;; Modeline height
+	(setq bespoke-modeline-size 3)
+	;; Use visual bell
+	(setq bespoke-modeline-visual-bell t)
+	:config
+	;; Use symbola to proper unicode
+	(when (member "Symbola" (font-family-list))
+		(set-fontset-font
+		 t 'symbol "Symbola" nil))
+
+  (bespoke-modeline-mode))
 
 (use-package ivy
   :diminish
@@ -196,11 +231,15 @@
   :config
   (counsel-mode 1))
 
+(use-package org-bullets)
+
 (add-hook 'org-mode-hook (lambda ()
 			       (org-bullets-mode 1)
 			       (require 'org-tempo) ;; activating some cool shortcuts
 			       (setq tempo-interactive t)
-			       (org-indent-mode)))
+						 (setq org-startup-folded t)
+						 (org-toggle-inline-images)
+						 (org-indent-mode)))
 
 (use-package ox-jekyll-md
   :init
@@ -224,6 +263,20 @@
 	     :publishing-function org-jekyll-md-publish-to-md
 	     :toc nil
 	     )))
+
+(defun my-org-screenshot ()
+	"Take a screenshot into a time stamped unique-named
+file in the same directory as the org-buffer and insert a link to this file."
+	(interactive)
+	(setq filename
+				(concat
+				 (make-temp-name
+					(concat (buffer-file-name)
+									"_"
+									(format-time-string "%Y%m%d_%H%M%S_")) ) ".png"))
+	(call-process "import" nil nil nil filename)
+	(insert (concat "[[" filename "]]"))
+	(org-display-inline-images))
 
 (add-to-list 'load-path "~/.local/share/emacs/site-lisp/mu4e")
 (require 'mu4e)
