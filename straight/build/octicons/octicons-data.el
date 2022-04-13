@@ -1,1 +1,0 @@
-/home/murilo/.emacs.d/straight/repos/octicons/octicons-data.el
