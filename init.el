@@ -28,7 +28,7 @@
 (setq package-enable-at-startup nil)
 
 (use-package straight
-						 :custom (straight-use-package-by-default t))
+  :custom (straight-use-package-by-default t))
 
 (use-package auto-package-update
   :straight t 
@@ -139,10 +139,12 @@
 	(setq dashboard-center-content t)
 	(setq dashboard-set-heading-icons t)
 	(setq dashboard-set-file-icons t)
+	(setq dashboard-items '((recents . 5) (bookmarks . 5))))
+  (dashboard-setup-startup-hook)
 
-	(setq dashboard-items '((recents . 5)
-													(bookmarks . 5))))
-   (dashboard-setup-startup-hook)
+(use-package all-the-icons)
+
+(use-package page-break-lines)
 
 (defun efs/set-font-faces ()
   (message "Setting Faces.")
@@ -184,20 +186,22 @@
 
 (use-package bespoke-modeline
 	:straight (:type git :host github :repo "mclear-tools/bespoke-modeline")
+	:hook (after-init . bespoke-modeline-mode)
 	:init
 	;; Set header line (modeline on top)
 	(setq bespoke-modeline-position 'top)
 	;; Modeline height
-	(setq bespoke-modeline-size 3)
+	(setq bespoke-modeline-size 10)
 	;; Use visual bell
-	(setq bespoke-modeline-visual-bell t)
+	(setq bespoke-modeline-visual-bell t))
+
+(use-package fontset
+	:straight (:type built-in) ;; only needed if you use straight.el
 	:config
-	;; Use symbola to proper unicode
+	;; Use symbola for proper uunicode
 	(when (member "Symbola" (font-family-list))
 		(set-fontset-font
-		 t 'symbol "Symbola" nil))
-
-  (bespoke-modeline-mode))
+		t 'symbol "Symbola" nil)))
 
 (use-package ivy
   :diminish

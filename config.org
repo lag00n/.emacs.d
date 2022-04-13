@@ -1,7 +1,6 @@
 #+TITLE: my emacs config, written in org.
 #+PROPERTY: header-args:elisp :tangle ./init.el 
 
-
 * Welcome to my config!
 That's my emacs config, written in org. This file generates [[file:init.el][init.el]] which will be loaded by emacs at startup.
 Whitout futher ado, let's get started!
@@ -76,8 +75,8 @@ Straight.el is a simple yet powerfull alternative to package.el, which I'm curre
 
 #+begin_src elisp
 
-		 (use-package straight
-									:custom (straight-use-package-by-default t))
+(use-package straight
+  :custom (straight-use-package-by-default t))
 
 #+end_src						 
 
@@ -244,7 +243,10 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 
 ** Dashboard configuration
 
+*IMPORTANT:* always remember to install =all-the-icons=, or dashboard buffer will crash :D.
+
 #+begin_src elisp
+
 (use-package dashboard
 	:straight t 
 	:after page-break-lines
@@ -256,10 +258,23 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 	(setq dashboard-center-content t)
 	(setq dashboard-set-heading-icons t)
 	(setq dashboard-set-file-icons t)
+	(setq dashboard-items '((recents . 5) (bookmarks . 5))))
+  (dashboard-setup-startup-hook)
 
-	(setq dashboard-items '((recents . 5)
-													(bookmarks . 5))))
-   (dashboard-setup-startup-hook)
+#+end_src
+
+*** Installing all-the-icons (dashboard dep)
+
+#+begin_src elisp
+
+(use-package all-the-icons)
+
+#+end_src
+
+*** Installing page-break-lines (dashboard dep too)
+#+begin_src elisp
+
+(use-package page-break-lines)
 
 #+end_src
 
@@ -320,27 +335,36 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 (use-package rainbow-mode :defer t)
 #+end_src
 
-** Bespoke-modeline 
+** Bespoke-modeline
 
 Bespoke modeline is a simple, yet beautiful modeline for emacs, based on nano-emacs modeline. 
 
 #+begin_src elisp
 (use-package bespoke-modeline
 	:straight (:type git :host github :repo "mclear-tools/bespoke-modeline")
+	:hook (after-init . bespoke-modeline-mode)
 	:init
 	;; Set header line (modeline on top)
 	(setq bespoke-modeline-position 'top)
 	;; Modeline height
-	(setq bespoke-modeline-size 3)
+	(setq bespoke-modeline-size 10)
 	;; Use visual bell
-	(setq bespoke-modeline-visual-bell t)
+	(setq bespoke-modeline-visual-bell t))
+
+#+end_src
+
+*** Fixing bespoke-modeline font
+
+With this, we're going to make sure that bespoke-modeline is using the correct font to display glyphs and stuff.
+
+#+begin_src elisp
+(use-package fontset
+	:straight (:type built-in) ;; only needed if you use straight.el
 	:config
-	;; Use symbola to proper unicode
+	;; Use symbola for proper uunicode
 	(when (member "Symbola" (font-family-list))
 		(set-fontset-font
-		 t 'symbol "Symbola" nil))
-
-  (bespoke-modeline-mode))
+		t 'symbol "Symbola" nil)))
 #+end_src
 
 ** DONE Configure Ivy + Counsel
