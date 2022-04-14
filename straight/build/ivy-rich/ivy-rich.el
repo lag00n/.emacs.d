@@ -1,1 +1,0 @@
-/home/murilo/.emacs.d/straight/repos/ivy-rich/ivy-rich.el
