@@ -75,8 +75,7 @@ Straight.el is a simple yet powerfull alternative to package.el, which I'm curre
 
 #+begin_src elisp
 
-(use-package straight
-  :custom (straight-use-package-by-default t))
+(setq straight-use-package-by-default t)
 
 #+end_src						 
 
@@ -248,12 +247,11 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 #+begin_src elisp
 
 (use-package dashboard
-	:straight t 
 	:after page-break-lines
 	:config
 	(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 	(setq dashboard-banner-logo-title "Hello, master. How can I serve you?")
-	(setq dashboard-startup-banner "/home/murilo/.emacs.d/dashboardimg/Sakuya.png")
+	(setq dashboard-startup-banner "~/.emacs.d/dashboardimg/Sakuya.png")
 	(setq dashboard-set-footer nil)
 	(setq dashboard-center-content t)
 	(setq dashboard-set-heading-icons t)

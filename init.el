@@ -27,8 +27,7 @@
 ;; Disabling package.el completely
 (setq package-enable-at-startup nil)
 
-(use-package straight
-  :custom (straight-use-package-by-default t))
+(setq straight-use-package-by-default t)
 
 (use-package auto-package-update
   :straight t 
@@ -129,12 +128,11 @@
  (show-paren-mode 1)
 
 (use-package dashboard
-	:straight t 
 	:after page-break-lines
 	:config
 	(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 	(setq dashboard-banner-logo-title "Hello, master. How can I serve you?")
-	(setq dashboard-startup-banner "/home/murilo/.emacs.d/dashboardimg/Sakuya.png")
+	(setq dashboard-startup-banner "~/.emacs.d/dashboardimg/Sakuya.png")
 	(setq dashboard-set-footer nil)
 	(setq dashboard-center-content t)
 	(setq dashboard-set-heading-icons t)
