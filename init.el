@@ -30,14 +30,14 @@
 (setq straight-use-package-by-default t)
 
 (use-package auto-package-update
-  :straight t 
-  :custom
-  (auto-package-update-interval 7)
-  (auto-package-update-prompt-before-update t)
-  (auto-package-update-hide-results t)
-  :config
-  (auto-package-update-maybe)
-  (auto-package-update-at-time "12:35"))
+	:straight t 
+	:custom
+	(auto-package-update-interval 7)
+	(auto-package-update-prompt-before-update t)
+	(auto-package-update-hide-results t)
+	:config
+	(auto-package-update-maybe)
+	(auto-package-update-at-time "12:35"))
 
 (setq-default tab-width 2)
 (setq-default standard-indent 2)
@@ -47,7 +47,7 @@
 (setq backward-delete-char-untabify-method 'nil)
 
 (setq eletric-pair-pairs '(
-	    										 (?\{ . ?\})
+													 (?\{ . ?\})
 													 (?\( . ?\))
 													 (?\[ . ?\])
 													 (?\" . ?\")
@@ -70,12 +70,12 @@
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
 (use-package ace-window
-  :init (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l) ;; switching keys to home row
-	  aw-char-position 'left
-	  aw-ignore-current nil
-	  aw-leading-char-style 'char
+	:init (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l) ;; switching keys to home row
+		aw-char-position 'left
+		aw-ignore-current nil
+		aw-leading-char-style 'char
 		aw-scope 'frame)
-  :bind (("M-o" . ace-window)
+	:bind (("M-o" . ace-window)
 				 ("M-O" . ace-swap-window)))
 
 (defun split-and-follow-horizontally ()
@@ -118,11 +118,11 @@
 
  ;; Disable line numbers for some modes
  (dolist (mode '(org-mode-hook
-                 term-mode-hook
-                 shell-mode-hook
-                 treemacs-mode-hook
-                 eshell-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+								 term-mode-hook
+								 shell-mode-hook
+								 treemacs-mode-hook
+								 eshell-mode-hook))
+		(add-hook mode (lambda () (display-line-numbers-mode 0))))
 
  ;; show parent parentheses
  (show-paren-mode 1)
@@ -139,7 +139,7 @@
 	(setq dashboard-set-heading-icons t)
 	(setq dashboard-set-file-icons t)
 	(setq dashboard-items '((recents . 5) (bookmarks . 5))))
-  (dashboard-setup-startup-hook)
+	(dashboard-setup-startup-hook)
 
 (use-package all-the-icons)
 
@@ -147,26 +147,26 @@
 	:demand t)
 
 (defun efs/set-font-faces ()
-  (message "Setting Faces.")
-  (set-face-attribute 'default nil :font "envypn 13")
-  (set-face-attribute 'fixed-pitch nil :font "envypn 13")
+	(message "Setting Faces.")
+	(set-face-attribute 'default nil :font "envypn 13")
+	(set-face-attribute 'fixed-pitch nil :font "envypn 13")
 	(set-fontset-font t 'symbol "Symbola" nil))
 
 (if (daemonp)
-    (add-hook 'after-make-frame-functions
-              (lambda (frame)
-                (with-selected-frame frame
-                  (efs/set-font-faces))))
-  (efs/set-font-faces))
+		(add-hook 'after-make-frame-functions
+							(lambda (frame)
+								(with-selected-frame frame
+									(efs/set-font-faces))))
+	(efs/set-font-faces))
 
 (use-package doom-themes
 	:straight t 
-  :config
-  (setq doom-themes-enable-bold t
-	    doom-themes-enable-italic t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
-  (load-theme 'doom-wilmersdorf t)
+	:config
+	(setq doom-themes-enable-bold t
+			doom-themes-enable-italic t)
+	(doom-themes-visual-bell-config)
+	(doom-themes-org-config))
+	(load-theme 'doom-wilmersdorf t)
 
 (defun my/org-mode/load-prettify-symbols ()
 	(interactive)
@@ -174,7 +174,7 @@
 				(mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
 								'(("#+begin_src" . ?)
 									("#+end_src" . ?))))
-	      (global-prettify-symbols-mode t))
+				(global-prettify-symbols-mode t))
 
 (add-hook 'org-mode-hook 'my/org-mode/load-prettify-symbols)
 
@@ -199,73 +199,73 @@
 	(setq bespoke-modeline-space-bottom -2)
 	;; Use visual bell
 	(setq bespoke-modeline-visual-bell t)
-  :config
-  (bespoke-modeline-mode))
+	:config
+	(bespoke-modeline-mode))
 
 (use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
+	:diminish
+	:bind (("C-s" . swiper)
+				 :map ivy-minibuffer-map
+				 ("TAB" . ivy-alt-done)
+				 ("C-l" . ivy-alt-done)
+				 ("C-j" . ivy-next-line)
+				 ("C-k" . ivy-previous-line)
+				 :map ivy-switch-buffer-map
+				 ("C-k" . ivy-previous-line)
+				 ("C-l" . ivy-done)
+				 ("C-d" . ivy-switch-buffer-kill)
+				 :map ivy-reverse-i-search-map
+				 ("C-k" . ivy-previous-line)
+				 ("C-d" . ivy-reverse-i-search-kill))
+	:config
+	(ivy-mode 1))
 
 (use-package ivy-rich
-  :after ivy
-  :init
-  (ivy-rich-mode 1))
+	:after ivy
+	:init
+	(ivy-rich-mode 1))
 
 (use-package counsel
-  :bind (("C-M-j" . 'counsel-switch-buffer)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history))
-  :custom
-  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-  :config
-  (counsel-mode 1))
+	:bind (("C-M-j" . 'counsel-switch-buffer)
+				 :map minibuffer-local-map
+				 ("C-r" . 'counsel-minibuffer-history))
+	:custom
+	(counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+	:config
+	(counsel-mode 1))
 
 (use-package org-bullets)
 
 (add-hook 'org-mode-hook (lambda ()
-			       (org-bullets-mode 1)
-			       (require 'org-tempo) ;; activating some cool shortcuts
-			       (setq tempo-interactive t)
+						 (org-bullets-mode 1)
+						 (require 'org-tempo) ;; activating some cool shortcuts
+						 (setq tempo-interactive t)
 						 (setq org-startup-folded t)
 						 (org-toggle-inline-images)
 						 (org-indent-mode)))
 
 (use-package ox-jekyll-md
-  :init
-  (setq org-jekyll-md-include-yaml-front-matter nil
-	    org-jekyll-md-use-todays-date nil))
+	:init
+	(setq org-jekyll-md-include-yaml-front-matter nil
+			org-jekyll-md-use-todays-date nil))
 
 (setq org-src-fontify-natively t
-      org-src-tab-acts-natively t
-      org-confirm-babel-evaluate nil
-      org-edit-src-content-indentation 0)
+			org-src-tab-acts-natively t
+			org-confirm-babel-evaluate nil
+			org-edit-src-content-indentation 0)
 
 (setq org-publish-project-alist
-      '(
-	    ("lag00n.github.io"
-	     ;; path to org files
-	     :base-directory "~/github/lag00n.github.io/_org"
-	     :base-extension "org"
-	     ;; path to jekyll posts
-	     :publishing-directory "~/github/lag00n.github.io/_cool_posts"
-	     :recursive t
-	     :publishing-function org-jekyll-md-publish-to-md
-	     :toc nil
-	     )))
+			'(
+			("lag00n.github.io"
+			 ;; path to org files
+			 :base-directory "~/github/lag00n.github.io/_org"
+			 :base-extension "org"
+			 ;; path to jekyll posts
+			 :publishing-directory "~/github/lag00n.github.io/_cool_posts"
+			 :recursive t
+			 :publishing-function org-jekyll-md-publish-to-md
+			 :toc nil
+			 )))
 
 (defun my-org-screenshot ()
 	"Take a screenshot into a time stamped unique-named
@@ -299,12 +299,12 @@ file in the same directory as the org-buffer and insert a link to this file."
 			smtpmail-smtp-server "smtp.paranoid.email"
 			smtpmail-smtp-service "25"
 			smtpmail-stream-type 'starttls
-      mu4e-sent-folder "/lxg00n-paranoid/Sent"
-      mu4e-drafts-folder "/lxg00n-paranoid/Drafts"
-      mu4e-trash-folder "/lxg00n-paranoid/Trash"
+			mu4e-sent-folder "/lxg00n-paranoid/Sent"
+			mu4e-drafts-folder "/lxg00n-paranoid/Drafts"
+			mu4e-trash-folder "/lxg00n-paranoid/Trash"
 			mu4e-decryption-policy 'ask
-      mu4e-maildir-shortcuts
-      '(("/lxg00n-paranoid/Inbox"      . ?i)
-        ("/lxg00n-paranoid/Sent Items" . ?s)
-        ("/lxg00n-paranoid/Drafts"     . ?d)
-        ("/lxg00n-paranoid/Trash"      . ?t)))
+			mu4e-maildir-shortcuts
+			'(("/lxg00n-paranoid/Inbox"			 . ?i)
+				("/lxg00n-paranoid/Sent Items" . ?s)
+				("/lxg00n-paranoid/Drafts"		 . ?d)
+				("/lxg00n-paranoid/Trash"			 . ?t)))
