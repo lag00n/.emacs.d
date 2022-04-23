@@ -24,3 +24,7 @@ exit
 xmodmap ~/.xmodmap
 xmodmap ~/.xmodmap
 exit
+ls
+ls
+clear
+fc-list | grep envy

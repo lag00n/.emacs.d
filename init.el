@@ -131,6 +131,7 @@
 	:after page-break-lines
 	:config
 	(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+	(setq dashboard-page-separator "\n\f\n")
 	(setq dashboard-banner-logo-title "Hello, master. How can I serve you?")
 	(setq dashboard-startup-banner "~/.emacs.d/dashboardimg/Sakuya.png")
 	(setq dashboard-set-footer nil)
@@ -142,12 +143,15 @@
 
 (use-package all-the-icons)
 
-(use-package page-break-lines)
+(use-package page-break-lines
+	:demand t)
 
 (defun efs/set-font-faces ()
   (message "Setting Faces.")
   (set-face-attribute 'default nil :font "envypn 13")
-  (set-face-attribute 'fixed-pitch nil :font "envypn 13"))
+  (set-face-attribute 'fixed-pitch nil :font "envypn 13")
+	(set-fontset-font t 'symbol "Symbola" nil))
+
 (if (daemonp)
     (add-hook 'after-make-frame-functions
               (lambda (frame)
@@ -169,8 +173,8 @@
 	(setq prettify-symbols-alist
 				(mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
 								'(("#+begin_src" . ?)
-									("#+end_src" . ?)))
-	      (global-prettify-symbols-mode t)))
+									("#+end_src" . ?))))
+	      (global-prettify-symbols-mode t))
 
 (add-hook 'org-mode-hook 'my/org-mode/load-prettify-symbols)
 
@@ -180,9 +184,10 @@
 	:init
 	(add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
-(use-package rainbow-mode :defer t)
+(use-package rainbow-mode)
 
 (use-package bespoke-modeline
+	:demand t 
 	:straight (:type git :host github :repo "mclear-tools/bespoke-modeline")
 	:hook (after-init . bespoke-modeline-mode)
 	:init
@@ -190,16 +195,12 @@
 	(setq bespoke-modeline-position 'top)
 	;; Modeline height
 	(setq bespoke-modeline-size 10)
+	;; Modeline spacing
+	(setq bespoke-modeline-space-bottom -2)
 	;; Use visual bell
-	(setq bespoke-modeline-visual-bell t))
-
-(use-package fontset
-	:straight (:type built-in) ;; only needed if you use straight.el
-	:config
-	;; Use symbola for proper uunicode
-	(when (member "Symbola" (font-family-list))
-		(set-fontset-font
-		t 'symbol "Symbola" nil)))
+	(setq bespoke-modeline-visual-bell t)
+  :config
+  (bespoke-modeline-mode))
 
 (use-package ivy
   :diminish
@@ -279,6 +280,12 @@ file in the same directory as the org-buffer and insert a link to this file."
 	(call-process "import" nil nil nil filename)
 	(insert (concat "[[" filename "]]"))
 	(org-display-inline-images))
+
+(use-package elfeed
+	:config
+	(setq elfeed-feeds
+		'("https://www.reddit.com/r/emacs/.rss"
+			"https://www.reddit.com/r/unixporn/new/.rss?sort=new")))
 
 (add-to-list 'load-path "~/.local/share/emacs/site-lisp/mu4e")
 (require 'mu4e)

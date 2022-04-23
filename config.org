@@ -1,5 +1,6 @@
 #+TITLE: my emacs config, written in org.
 #+PROPERTY: header-args:elisp :tangle ./init.el 
+#+STARTUP: overview
 
 * Welcome to my config!
 That's my emacs config, written in org. This file generates [[file:init.el][init.el]] which will be loaded by emacs at startup.
@@ -135,6 +136,7 @@ Might disable it later if I doesn't like it.
 	(setq yas-snippet-dirs '("~/.emacs.d/snippets"))
 	(yas-global-mode 1))
 #+end_src
+
 * Clipboard fix
 
 #+begin_src elisp
@@ -162,7 +164,6 @@ Might disable it later if I doesn't like it.
   :bind (("M-o" . ace-window)
 				 ("M-O" . ace-swap-window)))
 #+end_src
-
 
 * Creating a new window switches the focus to it
 
@@ -250,6 +251,7 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 	:after page-break-lines
 	:config
 	(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+	(setq dashboard-page-separator "\n\f\n")
 	(setq dashboard-banner-logo-title "Hello, master. How can I serve you?")
 	(setq dashboard-startup-banner "~/.emacs.d/dashboardimg/Sakuya.png")
 	(setq dashboard-set-footer nil)
@@ -272,7 +274,8 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 *** Installing page-break-lines (dashboard dep too)
 #+begin_src elisp
 
-(use-package page-break-lines)
+(use-package page-break-lines
+	:demand t)
 
 #+end_src
 
@@ -282,7 +285,9 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 (defun efs/set-font-faces ()
   (message "Setting Faces.")
   (set-face-attribute 'default nil :font "envypn 13")
-  (set-face-attribute 'fixed-pitch nil :font "envypn 13"))
+  (set-face-attribute 'fixed-pitch nil :font "envypn 13")
+	(set-fontset-font t 'symbol "Symbola" nil))
+
 (if (daemonp)
     (add-hook 'after-make-frame-functions
               (lambda (frame)
@@ -312,8 +317,8 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 	(setq prettify-symbols-alist
 				(mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
 								'(("#+begin_src" . ?)
-									("#+end_src" . ?)))
-	      (global-prettify-symbols-mode t)))
+									("#+end_src" . ?))))
+	      (global-prettify-symbols-mode t))
 
 (add-hook 'org-mode-hook 'my/org-mode/load-prettify-symbols)
 
@@ -330,7 +335,7 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 
 ** Rainbow mode
 #+begin_src elisp
-(use-package rainbow-mode :defer t)
+(use-package rainbow-mode)
 #+end_src
 
 ** Bespoke-modeline
@@ -339,6 +344,7 @@ Bespoke modeline is a simple, yet beautiful modeline for emacs, based on nano-em
 
 #+begin_src elisp
 (use-package bespoke-modeline
+	:demand t 
 	:straight (:type git :host github :repo "mclear-tools/bespoke-modeline")
 	:hook (after-init . bespoke-modeline-mode)
 	:init
@@ -346,16 +352,21 @@ Bespoke modeline is a simple, yet beautiful modeline for emacs, based on nano-em
 	(setq bespoke-modeline-position 'top)
 	;; Modeline height
 	(setq bespoke-modeline-size 10)
+	;; Modeline spacing
+	(setq bespoke-modeline-space-bottom -2)
 	;; Use visual bell
-	(setq bespoke-modeline-visual-bell t))
+	(setq bespoke-modeline-visual-bell t)
+  :config
+  (bespoke-modeline-mode))
 
 #+end_src
 
 *** Fixing bespoke-modeline font
 
-With this, we're going to make sure that bespoke-modeline is using the correct font to display glyphs and stuff.
+With this, we're going to make sure that bespoke-modeline is using the correct font to display glyphs and stuff. *Currently disabled bc
+I already fixed that. 
 
-#+begin_src elisp
+#+begin_src elisp :tangle no
 (use-package fontset
 	:straight (:type built-in) ;; only needed if you use straight.el
 	:config
@@ -476,6 +487,19 @@ file in the same directory as the org-buffer and insert a link to this file."
 	(insert (concat "[[" filename "]]"))
 	(org-display-inline-images))
 #+end_src
+
+* Rss with elfeed
+
+Elfeed is a awesome RSS feed reader for emacs. I mainly use it to keep track of some subreddits.
+
+#+begin_src elisp
+(use-package elfeed
+	:config
+	(setq elfeed-feeds
+		'("https://www.reddit.com/r/emacs/.rss"
+			"https://www.reddit.com/r/unixporn/new/.rss?sort=new")))
+#+end_src
+
 * Mail setup with mu4e
 
 Mail setup using mu4e.
