@@ -146,27 +146,25 @@
 (use-package page-break-lines
   :demand t)
 
-(defun efs/set-font-faces ()
+(defun lxgmacs/set-font-faces ()
   (message "Setting Faces.")
-  (set-face-attribute 'default nil :font "envypn 13")
-  (set-face-attribute 'fixed-pitch nil :font "envypn 13")
+  (set-face-attribute 'default nil :font "Envy Code R for Powerline 10")
+  (set-face-attribute 'fixed-pitch nil :font "envypn 10")
   (set-fontset-font t 'symbol "Symbola" nil))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
               (lambda (frame)
                 (with-selected-frame frame
-                  (efs/set-font-faces))))
-  (efs/set-font-faces))
+                  (lxgmacs/set-font-faces))))
+  (lxgmacs/set-font-faces))
 
-(use-package doom-themes
-  :straight t 
-  :config
-  (setq doom-themes-enable-bold t
-      doom-themes-enable-italic t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
-  (load-theme 'doom-wilmersdorf t)
+(custom-set-faces
+	'(font-lock-comment-face ((t (:font "Envy Code R for Powerline 10" :italic t)))))
+
+(use-package autothemer
+	:init
+	(load-theme 'mellow-light t))
 
 (defun my/org-mode/load-prettify-symbols ()
   (interactive)
@@ -186,21 +184,26 @@
 
 (use-package rainbow-mode)
 
-(use-package bespoke-modeline
-  :demand t 
-  :straight (:type git :host github :repo "mclear-tools/bespoke-modeline")
-  :hook (after-init . bespoke-modeline-mode)
-  :init
-  ;; Set header line (modeline on top)
-  (setq bespoke-modeline-position 'top)
-  ;; Modeline height
-  (setq bespoke-modeline-size 10)
-  ;; Modeline spacing
-  (setq bespoke-modeline-space-bottom -2)
-  ;; Use visual bell
-  (setq bespoke-modeline-visual-bell t)
-  :config
-  (bespoke-modeline-mode))
+(use-package lambda-line
+	:demand t 
+	:straight (:type git :host github :repo "lambda-emacs/lambda-line")
+	:custom
+	(lambda-line-position 'top) ;; Set modeline position
+	(lambda-line-abbrev t) ;; Abbreviate or not major modes
+	(lambda-line-hspace " ") ;; Add some cushion
+	(lambda-line-prefix t) ;; Use a prefix symbol
+	(lambda-line-prefix-padding t) ;; A little spacing? Yes please 
+	(lambda-line-status-invert nil) ;; No invert colors
+	(lambda-line-space-top +.50) ;; Padding on top and bottom of modeline
+	(lambda-line-space-bottom -.50)
+	(lambda-line-symbol-position 0.1) ;; Adjust the vertical placement of symbol
+	:config
+	;; activate lambda-line
+	(lambda-line-mode)
+	;; set divider line in footer
+	(when (eq lambda-line-position 'top)
+		(setq-default mode-line-format (list "%_"))
+		(setq mode-line-format (list "%_"))))
 
 (use-package ivy
   :diminish
@@ -248,6 +251,11 @@
   :init
   (setq org-jekyll-md-include-yaml-front-matter nil
       org-jekyll-md-use-todays-date nil))
+
+(setq org-log-done t)
+(setq org-agenda-files '("~/.emacs.d/agenda"))
+
+(global-set-key (kbd "C-c a") 'org-agenda)
 
 (setq org-src-fontify-natively t
       org-src-tab-acts-natively t

@@ -238,7 +238,6 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 
   ;; show parent parentheses
   (show-paren-mode 1)
-
  #+end_src
 
 ** Dashboard configuration
@@ -282,23 +281,30 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 ** Font configuration
 
 #+begin_src elisp
-(defun efs/set-font-faces ()
+(defun lxgmacs/set-font-faces ()
   (message "Setting Faces.")
-  (set-face-attribute 'default nil :font "envypn 13")
-  (set-face-attribute 'fixed-pitch nil :font "envypn 13")
+  (set-face-attribute 'default nil :font "Envy Code R for Powerline 10")
+  (set-face-attribute 'fixed-pitch nil :font "envypn 10")
   (set-fontset-font t 'symbol "Symbola" nil))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
               (lambda (frame)
                 (with-selected-frame frame
-                  (efs/set-font-faces))))
-  (efs/set-font-faces))
+                  (lxgmacs/set-font-faces))))
+  (lxgmacs/set-font-faces))
 #+end_src
 
+*** Font-lock settings
+#+begin_src elisp 
+(custom-set-faces
+	'(font-lock-comment-face ((t (:font "Envy Code R for Powerline 10" :italic t)))))
+#+end_src
 ** Doom-themes
 
-#+begin_src elisp
+Disabled because I'm actually usign my own colorscheme, based on vim-mellow.
+
+#+begin_src elisp :tangle no
 (use-package doom-themes
   :straight t 
   :config
@@ -307,6 +313,17 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
   (load-theme 'doom-wilmersdorf t)
+#+end_src
+
+** Creating my own theme using autothemer
+
+Autothemer is a emacs utility package that allows you to create your own theme
+in a "easy" and simple way. I'll be testing it.
+
+#+begin_src elisp
+(use-package autothemer
+	:init
+	(load-theme 'mellow-light t))
 #+end_src
 
 ** Prettify symbols mode
@@ -338,11 +355,12 @@ Just configuring basic UI settings, to make Emacs look a lot more minimal. Basic
 (use-package rainbow-mode)
 #+end_src
 
-** Bespoke-modeline
+** Bespoke-modeline 
 
 Bespoke modeline is a simple, yet beautiful modeline for emacs, based on nano-emacs modeline. 
+*Currently disabled for lambda-modeline*
 
-#+begin_src elisp
+#+begin_src elisp :tangle no
 (use-package bespoke-modeline
   :demand t 
   :straight (:type git :host github :repo "mclear-tools/bespoke-modeline")
@@ -361,7 +379,34 @@ Bespoke modeline is a simple, yet beautiful modeline for emacs, based on nano-em
 
 #+end_src
 
-*** Fixing bespoke-modeline font
+** Lambda-line
+
+Lambda-line is a simple and pretty modeline for emacs. It has strong design inspiration from bespoke-modeline.
+
+#+begin_src elisp
+(use-package lambda-line
+	:demand t 
+	:straight (:type git :host github :repo "lambda-emacs/lambda-line")
+	:custom
+	(lambda-line-position 'top) ;; Set modeline position
+	(lambda-line-abbrev t) ;; Abbreviate or not major modes
+	(lambda-line-hspace " ") ;; Add some cushion
+	(lambda-line-prefix t) ;; Use a prefix symbol
+	(lambda-line-prefix-padding t) ;; A little spacing? Yes please 
+	(lambda-line-status-invert nil) ;; No invert colors
+	(lambda-line-space-top +.50) ;; Padding on top and bottom of modeline
+	(lambda-line-space-bottom -.50)
+	(lambda-line-symbol-position 0.1) ;; Adjust the vertical placement of symbol
+	:config
+	;; activate lambda-line
+	(lambda-line-mode)
+	;; set divider line in footer
+	(when (eq lambda-line-position 'top)
+		(setq-default mode-line-format (list "%_"))
+		(setq mode-line-format (list "%_"))))
+#+end_src
+
+*** Fixing lambda-modeline font
 
 With this, we're going to make sure that bespoke-modeline is using the correct font to display glyphs and stuff. *Currently disabled bc
 I already fixed that. 
@@ -440,6 +485,15 @@ CLOSED: [2021-05-16 dom 00:00]
   :init
   (setq org-jekyll-md-include-yaml-front-matter nil
       org-jekyll-md-use-todays-date nil))
+#+end_src
+
+** Org-Agenda
+
+#+begin_src elisp
+(setq org-log-done t)
+(setq org-agenda-files '("~/.emacs.d/agenda"))
+
+(global-set-key (kbd "C-c a") 'org-agenda)
 #+end_src
 
 ** Syntax highlightening and stuff inside org source blocks
